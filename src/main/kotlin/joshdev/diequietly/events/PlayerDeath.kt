@@ -6,6 +6,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.persistence.PersistentDataType
 
 class PlayerDeath : Listener {
     @EventHandler
@@ -15,12 +16,11 @@ class PlayerDeath : Listener {
         if (deathComponent != null) {
             val deathMsg = PlainTextComponentSerializer.plainText().serialize(deathComponent)
             DieQuietly.pluginLogger.info(deathMsg)
-            event.deathMessage(null)
             val onlinePlayers = event.player.server.onlinePlayers
             for (player in onlinePlayers) {
-                val isToggled = DieQuietly.wrapper.getPlayerToggle(player.uniqueId.toString())
-                if (!isToggled) {
-                    player.sendMessage(deathMsg)
+                val isToggled = player.persistentDataContainer.get(DieQuietly.toggleKey, PersistentDataType.BOOLEAN)
+                if (isToggled == false || isToggled == null) {
+                    player.sendMessage(deathComponent)
                 }
             }
         } else {

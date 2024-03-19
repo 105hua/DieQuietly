@@ -8,6 +8,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.persistence.PersistentDataType
 
 class ToggleDeathMsgs : CommandExecutor {
     override fun onCommand(
@@ -22,22 +23,29 @@ class ToggleDeathMsgs : CommandExecutor {
         }
         val player: Player = sender
         if (player.hasPermission("diequietly.toggle")) {
-            val newValue = DieQuietly.wrapper.togglePlayer(player.uniqueId.toString())
-            if (newValue) {
-                val hiddenComponent =
-                    Component.text(
-                        "Death messages are now hidden.",
-                        NamedTextColor.AQUA,
-                    )
-                player.sendMessage(hiddenComponent)
-            } else {
+            val persistentValue = player.persistentDataContainer.get(DieQuietly.toggleKey, PersistentDataType.BOOLEAN)
+            val newValue: Boolean =
+                if (persistentValue == null) {
+                    true
+                } else {
+                    !persistentValue
+                }
+            if (!newValue) {
                 val shownComponent =
                     Component.text(
                         "Death messages are now shown.",
                         NamedTextColor.AQUA,
                     )
                 player.sendMessage(shownComponent)
+            } else {
+                val hiddenComponent =
+                    Component.text(
+                        "Death messages are now hidden.",
+                        NamedTextColor.AQUA,
+                    )
+                player.sendMessage(hiddenComponent)
             }
+            player.persistentDataContainer.set(DieQuietly.toggleKey, PersistentDataType.BOOLEAN, newValue)
         } else {
             val noPermissionComponent =
                 Component.text(

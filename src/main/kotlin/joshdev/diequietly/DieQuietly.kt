@@ -3,25 +3,20 @@ package joshdev.diequietly
 
 import joshdev.diequietly.commands.ToggleDeathMsgs
 import joshdev.diequietly.events.PlayerDeath
-import joshdev.diequietly.libs.DatabaseWrapper
+import org.bukkit.NamespacedKey
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.logging.Logger
 
 class DieQuietly : JavaPlugin() {
     companion object {
         lateinit var pluginLogger: Logger
-        lateinit var wrapper: DatabaseWrapper
+        lateinit var toggleKey: NamespacedKey
     }
 
     override fun onEnable() {
         // Set companion objects.
         pluginLogger = logger
-        // Setup data folder and wrapper.
-        if (!dataFolder.exists()) {
-            dataFolder.mkdirs()
-        }
-        val dataFolderPath = dataFolder.absolutePath
-        wrapper = DatabaseWrapper(dataFolderPath)
+        toggleKey = NamespacedKey(this, "diequietly_toggle")
         // Setup event.
         server.pluginManager.registerEvents(PlayerDeath(), this)
         // Setup toggle command.
