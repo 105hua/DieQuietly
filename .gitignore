@@ -170,4 +170,7 @@ gradle-app.setting
 ### Get rid of .idea ###
 .idea/
 
+### Get rid of build dir ###
+build/
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij,kotlin,gradle
